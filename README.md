@@ -109,6 +109,39 @@ Press Shift+Enter (then Ctrl+C to exit):
 
 If you're on 2025.3.3+ and want to test that the plugin works independently of the built-in fix, disable it at **Settings > Advanced Settings > Terminal > "Send Esc+CR on Shift+Enter"**.
 
+## Real-World Example: Fish Shell
+
+[Fish shell](https://fishshell.com/) (version 4.0+) uses the kitty keyboard protocol to distinguish Shift+Enter from Enter. This is a clear, observable example of a standard tool that misbehaves in JetBrains terminals without this plugin.
+
+Fish is available on both macOS (`brew install fish`) and Linux (all major distributions).
+
+### Behavior with kitty CSI u (this plugin installed)
+
+Shift+Enter **inserts a newline** in the fish prompt, allowing you to compose multi-line commands before executing:
+
+```
+cwoolley@mac ~> echo "hello" \
+                echo "world"
+```
+
+You can keep adding lines with Shift+Enter and execute the whole block with Enter.
+
+### Behavior without kitty CSI u (no plugin)
+
+Shift+Enter **executes the command** — identical to plain Enter. Fish cannot detect the Shift modifier because JediTerm sends the same `\r` byte for both keys.
+
+### How to test
+
+1. Install fish: `brew install fish` (macOS) or `apt install fish` (Debian/Ubuntu)
+2. Open a JetBrains terminal and run `fish`
+3. Type `echo "hello"` and press **Shift+Enter**
+   - **Without plugin**: The command executes immediately (prints "hello")
+   - **With plugin**: A newline is inserted — you can keep typing on the next line, then press Enter to execute
+
+### Also affected: Neovim
+
+[Neovim](https://neovim.io/) (0.8+) queries the terminal for CSI u support at startup and enables mappings like `<S-CR>` (Shift+Enter) when available. Without kitty CSI u, `<S-CR>` mappings silently do nothing — Neovim cannot distinguish the keypress from a plain Enter.
+
 ## Development
 
 ### Prerequisites
