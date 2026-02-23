@@ -1,0 +1,35 @@
+<idea-plugin>
+    <id>com.github.thewoolleyman.jetbrains.terminalkittykeys</id>
+    <name>Terminal Kitty Keys</name>
+    <vendor>thewoolleyman</vendor>
+    <description><![CDATA[
+        Sends kitty keyboard protocol (CSI u) escape sequences for Shift+Enter in the
+        JetBrains built-in terminal, enabling proper newline support in TUI apps like
+        Claude Code, Gemini CLI, and Codex CLI.
+
+        <p>Without this plugin, Shift+Enter in the JetBrains terminal sends the same
+        byte as plain Enter — TUI applications cannot distinguish between them.
+        This plugin intercepts Shift+Enter at the IDE level and injects the standard
+        kitty CSI u escape sequence (<code>ESC[13;2u</code>) into the PTY.</p>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>org.jetbrains.plugins.terminal</depends>
+
+    <actions>
+        <action id="TerminalKittyKeys.SendShiftEnter"
+                class="com.github.thewoolleyman.jetbrains.terminalkittykeys.SendShiftEnterAction"
+                text="Send Shift+Enter to Terminal"
+                description="Sends kitty CSI u escape sequence for Shift+Enter to the terminal PTY">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ENTER"/>
+        </action>
+    </actions>
+
+    <!-- TODO: Register TerminalAllowedActionsProvider when targeting 2025.3+
+         to ensure the action fires even with "Override IDE shortcuts" enabled.
+    <extensions defaultExtensionNs="org.jetbrains.plugins.terminal">
+        <allowedActionsProvider
+            implementation="com.github.thewoolleyman.jetbrains.terminalkittykeys.ShiftEnterAllowedActionsProvider"/>
+    </extensions>
+    -->
+</idea-plugin>

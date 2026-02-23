@@ -30,6 +30,10 @@ build/
 
 # Kotlin
 *.class
+.kotlin/
 
-# Plugin
-build/distributions/
+# IntelliJ Platform
+.intellijPlatform/
+
+# JVM
+*.hprof
