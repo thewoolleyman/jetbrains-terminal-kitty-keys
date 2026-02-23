@@ -109,38 +109,38 @@ Press Shift+Enter (then Ctrl+C to exit):
 
 If you're on 2025.3.3+ and want to test that the plugin works independently of the built-in fix, disable it at **Settings > Advanced Settings > Terminal > "Send Esc+CR on Shift+Enter"**.
 
-## Real-World Example: Fish Shell
+## Real-World Example: Neovim `<S-CR>` Mappings
 
-[Fish shell](https://fishshell.com/) (version 4.0+) uses the kitty keyboard protocol to distinguish Shift+Enter from Enter. This is a clear, observable example of a standard tool that misbehaves in JetBrains terminals without this plugin.
+[Neovim](https://neovim.io/) (0.8+) is available on both macOS (`brew install neovim`) and Linux (all major distributions). It queries the terminal for CSI u support at startup and enables modifier-aware key mappings when available.
 
-Fish is available on both macOS (`brew install fish`) and Linux (all major distributions).
+This is the clearest real-world example where the JetBrains built-in fix (`ESC+CR`) is **not sufficient** and kitty CSI u is required.
 
-### Behavior with kitty CSI u (this plugin installed)
+### The problem
 
-Shift+Enter **inserts a newline** in the fish prompt, allowing you to compose multi-line commands before executing:
+Neovim lets you map `<S-CR>` (Shift+Enter) and `<CR>` (Enter) to different actions. For example, a common setup in completion plugins:
 
-```
-cwoolley@mac ~> echo "hello" \
-                echo "world"
-```
+- `<CR>` — confirm completion
+- `<S-CR>` — confirm completion and add a newline
 
-You can keep adding lines with Shift+Enter and execute the whole block with Enter.
+Without kitty CSI u, Neovim cannot detect the Shift modifier. The `<S-CR>` mapping silently falls through to `<CR>`, and the user has no way to trigger Shift+Enter–specific behavior.
 
-### Behavior without kitty CSI u (no plugin)
-
-Shift+Enter **executes the command** — identical to plain Enter. Fish cannot detect the Shift modifier because JediTerm sends the same `\r` byte for both keys.
+JetBrains' built-in fix sends `ESC+CR` (`\x1b\r`), which Neovim interprets as `<M-CR>` (Meta/Alt+Enter) — **not** `<S-CR>` (Shift+Enter). So the built-in fix does not help here.
 
 ### How to test
 
-1. Install fish: `brew install fish` (macOS) or `apt install fish` (Debian/Ubuntu)
-2. Open a JetBrains terminal and run `fish`
-3. Type `echo "hello"` and press **Shift+Enter**
-   - **Without plugin**: The command executes immediately (prints "hello")
-   - **With plugin**: A newline is inserted — you can keep typing on the next line, then press Enter to execute
+1. Install neovim: `brew install neovim` (macOS) or `apt install neovim` (Debian/Ubuntu)
+2. Open a JetBrains terminal and run:
+   ```sh
+   nvim -c 'nnoremap <S-CR> :echo "Shift+Enter detected!"<CR>' -c 'nnoremap <CR> :echo "Plain Enter detected"<CR>'
+   ```
+3. Press **Enter** in normal mode — you should see "Plain Enter detected"
+4. Press **Shift+Enter** in normal mode:
+   - **Without plugin**: Shows "Plain Enter detected" (Neovim cannot distinguish the keys)
+   - **With plugin**: Shows "Shift+Enter detected!" (Neovim receives CSI u and recognizes `<S-CR>`)
 
-### Also affected: Neovim
+### Note on fish shell
 
-[Neovim](https://neovim.io/) (0.8+) queries the terminal for CSI u support at startup and enables mappings like `<S-CR>` (Shift+Enter) when available. Without kitty CSI u, `<S-CR>` mappings silently do nothing — Neovim cannot distinguish the keypress from a plain Enter.
+[Fish shell](https://fishshell.com/) (4.0+) is **not** a good test case for this plugin. Fish binds Alt+Enter (`\e\n`) to insert a newline, and JetBrains' built-in fix sends the same ESC+CR sequence for Shift+Enter — so fish works correctly without this plugin on JetBrains 2025.3.3+. See [fish interactive docs](https://fishshell.com/docs/current/interactive.html) for details.
 
 ## Development
 
