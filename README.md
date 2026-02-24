@@ -38,6 +38,10 @@ This plugin intercepts Shift+Enter at the IDE level (before JediTerm processes i
 
 ## Installation
 
+### From JetBrains Marketplace
+
+Install directly from your IDE: **Settings > Plugins > Marketplace**, search for **Terminal Kitty Keys**, or visit the [plugin page](https://plugins.jetbrains.com/plugin/30338-terminal-kitty-keys).
+
 ### From Disk (Local Build)
 
 1. Build the plugin: `./gradlew buildPlugin`
