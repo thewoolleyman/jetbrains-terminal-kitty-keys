@@ -22,7 +22,7 @@ repositories {
 
 dependencies {
     intellijPlatform {
-        local("/Users/cwoolley/Applications/IntelliJ IDEA.app")
+        intellijIdea(providers.gradleProperty("platformVersion"))
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
         testFramework(TestFrameworkType.Platform)
     }
@@ -57,6 +57,10 @@ tasks.test {
 }
 
 intellijPlatform {
+    publishing {
+        token = providers.environmentVariable("PUBLISH_TOKEN")
+    }
+
     pluginConfiguration {
         name = providers.gradleProperty("pluginName")
         version = providers.gradleProperty("pluginVersion")

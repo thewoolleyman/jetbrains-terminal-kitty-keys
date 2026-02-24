@@ -13,6 +13,14 @@
         kitty CSI u escape sequence (<code>ESC[13;2u</code>) into the PTY.</p>
     ]]></description>
 
+    <change-notes><![CDATA[
+        <b>0.2.0</b>
+        <ul>
+            <li>Reworked for IntelliJ 2025.3 Reworked Terminal API</li>
+            <li>Uses allowedActionsProvider extension point for proper terminal key handling</li>
+        </ul>
+    ]]></change-notes>
+
     <depends>com.intellij.modules.platform</depends>
     <depends>org.jetbrains.plugins.terminal</depends>
 
