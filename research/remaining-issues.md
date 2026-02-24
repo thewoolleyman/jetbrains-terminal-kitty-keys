@@ -56,14 +56,7 @@ https://github.com/anthropics/claude-code/issues/5114
 
 https://github.com/anthropics/claude-code/issues/1262
 
-Large comment thread with extensive workaround attempts, none satisfactory:
-
-- **@StephenBadger**: "Same issue, very annoying. Makes it hard to talk to Claude."
-- **@isi2010**: "But this isn't the solution. In every work you are using shift + enter for a new line and this is for years like this. Really hard to train yourself to use something else for a new line."
-- **@pupeno**: Tried VSCode keybinding hacks, discovered Claude Code writes keybindings inside WSL instead of on the Windows host.
-- **@gusbicalho**: Reported leftover `\` character when using backslash-enter workaround keybindings.
-- **@JuliaBonita**: "In WSL2, something completely blocks all attempts to modify the key bindings using `bind` or any other system tools."
-- **@vitmantug**: "That will add a backslash at the end of every line."
+**Not relevant to this plugin.** All commenters are using standalone terminals (Windows Terminal, VSCode) with WSL, not JetBrains IDEs. This plugin operates at the JetBrains IDE level and is not WSL-specific — it works the same way regardless of whether the terminal session is running a local shell or WSL.
 
 ### #1280 — "Multiline Input Broken in PyCharm Claude Plugin Code Editor" (Closed)
 
