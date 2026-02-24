@@ -1,6 +1,6 @@
 # Remaining Issues Not Addressed by JetBrains Built-in Fix
 
-Research into open and closed issues across JetBrains YouTrack and GitHub where the JetBrains 2025.3.3+ built-in fix (ESC+CR) is insufficient and the Terminal Kitty Keys plugin (kitty CSI u / `ESC[13;2u`) would help.
+Research into open and closed issues in JetBrains YouTrack and JetBrains-specific GitHub issues where the JetBrains 2025.3.3+ built-in fix (ESC+CR) is insufficient and the Terminal Kitty Keys plugin (kitty CSI u / `ESC[13;2u`) would help.
 
 Last updated: 2026-02-24
 
@@ -29,7 +29,7 @@ This issue remains open. JetBrains considers the general problem unsolved.
 - **Konstantin Hudyakov** confirmed the Classic terminal's Shift+Enter support came from the Terminal Kitty Keys plugin, not from JetBrains itself: "the Shift+Enter in the Classic Terminal actually works because of Claude Code IntelliJ plugin - it adds a custom handler for this key binding and sends custom bytes to the PTY."
 - **@bric3**: "Terminal emulators appear to behave inconsistently, Ghostty, iTerm2, and JetBrains classic terminal do allow shift + enter when claude is running. Apple's stock Terminal app does not."
 
-## GitHub — anthropics/claude-code
+## GitHub — anthropics/claude-code (JetBrains-specific issues)
 
 ### #4796 — "JetBrains Plugin Doesn't Support Shift+Enter" (Closed as duplicate)
 
@@ -51,76 +51,6 @@ https://github.com/anthropics/claude-code/issues/5114
 https://github.com/anthropics/claude-code/issues/1280
 
 - **@tim-watcha**: "I'm using classic engine" — indicating the issue existed on Classic engine for some users too.
-
-## GitHub — google-gemini/gemini-cli
-
-Users in these issues experience Shift+Enter not working in various terminals. JetBrains terminal users can fix this with the Terminal Kitty Keys plugin.
-
-### #849 — "shift-enter should do an enter but keep user control" (Closed)
-
-https://github.com/google-gemini/gemini-cli/issues/849
-
-- **@mark-99**: "Please make shift-enter work, every other UI works that way (Claude Code in particular), too much muscle-memory to have to remember a different key combination just for gemini."
-- **@justinfagnani**: "The first thing I did after installing and trying out Gemini CLI for the first time is look for this issue... There HAS to be a way to get this to work."
-- **@gaaclarke** (Google): "Getting shift+enter is a big deal with ncurses... from a UX perspective it's still problematic since it's nonstandard behavior."
-
-### #4161 — "shift+enter should give a newline" (Closed)
-
-https://github.com/google-gemini/gemini-cli/issues/4161
-
-### #15139 — "Shift enter support on windows" (Open)
-
-https://github.com/google-gemini/gemini-cli/issues/15139
-
-Windows-specific — Shift+Enter fails entirely.
-
-### #13431 — "Support enabling modifyOtherKeys keyboard mode" (Closed/fixed)
-
-https://github.com/google-gemini/gemini-cli/issues/13431
-
-Gemini CLI added modifyOtherKeys support separately.
-
-- **@jacob314** (Google contributor): "One thing we'll want to watch out for is that terminals that support the kitty protocol should continue to use it rather than the modifyOtherKeys functionality."
-
-### Other duplicates: #12812, #2668, #15282, #16916, #2532
-
-## GitHub — openai/codex
-
-Users in these issues experience Shift+Enter not working in various terminals. JetBrains terminal users can fix this with the Terminal Kitty Keys plugin.
-
-### #4218 — "Regression: Shift+Enter sends prompt instead of inserting line break (macOS)" (OPEN)
-
-https://github.com/openai/codex/issues/4218
-
-Reports that Shift+Enter stopped working in v0.41.0 after previously working.
-
-### #8603 — "Improve workflow with optional 'ctrl + enter' submission and jump a line with 'shift + enter'" (OPEN)
-
-https://github.com/openai/codex/issues/8603
-
-### #11559 — "Plan Question UI: Shift+Enter in 'None of the above' notes submits instead of inserting newline" (OPEN)
-
-https://github.com/openai/codex/issues/11559
-
-### Other duplicates: #8673, #2358
-
-## GitHub — anomalyco/opencode
-
-Users in these issues experience Shift+Enter not working in various terminals. JetBrains terminal users can fix this with the Terminal Kitty Keys plugin.
-
-### #4046 — "Shift-return does not input newline since 1.0" (OPEN)
-
-https://github.com/anomalyco/opencode/issues/4046
-
-Works in Ghostty normally but not since OpenCode 1.0.
-
-### #11983 — "Keyboard keybinds configuration not working - input_newline: shift+enter ignored" (OPEN)
-
-https://github.com/anomalyco/opencode/issues/11983
-
-Extremely detailed bug report showing Shift+Enter submits instead of newline across multiple terminals, even with explicit configuration.
-
-### Other open issues: #8038, #10877, #7248
 
 ## Summary: Why the Plugin Is Still Needed
 

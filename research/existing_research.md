@@ -87,6 +87,27 @@ A JetBrains plugin that intercepts Shift+Enter at the IDE level and sends the pr
 
 - **[JediTerm repo](https://github.com/JetBrains/jediterm)** — No open issue specifically requesting kitty keyboard protocol support
 
+### Google Gemini CLI (GitHub)
+
+- **[#849](https://github.com/google-gemini/gemini-cli/issues/849)** — shift-enter should do an enter but keep user control (closed)
+- **[#4161](https://github.com/google-gemini/gemini-cli/issues/4161)** — shift+enter should give a newline (closed)
+- **[#15139](https://github.com/google-gemini/gemini-cli/issues/15139)** — Shift enter support on windows (open)
+- **[#13431](https://github.com/google-gemini/gemini-cli/issues/13431)** — Support enabling modifyOtherKeys keyboard mode (closed/fixed)
+- Other duplicates: #12812, #2668, #15282, #16916, #2532
+
+### OpenAI Codex (GitHub)
+
+- **[#4218](https://github.com/openai/codex/issues/4218)** — Regression: Shift+Enter sends prompt instead of inserting line break (open)
+- **[#8603](https://github.com/openai/codex/issues/8603)** — Improve workflow with optional 'ctrl + enter' submission and jump a line with 'shift + enter' (open)
+- **[#11559](https://github.com/openai/codex/issues/11559)** — Plan Question UI: Shift+Enter submits instead of inserting newline (open)
+- Other duplicates: #8673, #2358
+
+### OpenCode (GitHub)
+
+- **[#4046](https://github.com/anomalyco/opencode/issues/4046)** — Shift-return does not input newline since 1.0 (open)
+- **[#11983](https://github.com/anomalyco/opencode/issues/11983)** — Keyboard keybinds configuration not working - input_newline: shift+enter ignored (open)
+- Other open issues: #8038, #10877, #7248
+
 ## Current Workarounds
 
 1. **Update to JetBrains 2025.3.3+** — Shift+Enter sends ESC+CR which Claude Code interprets as newline
