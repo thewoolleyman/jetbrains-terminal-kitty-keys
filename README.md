@@ -1,5 +1,6 @@
 # JetBrains Terminal Kitty Keys
 
+[![CI](https://github.com/thewoolleyman/jetbrains-terminal-kitty-keys/actions/workflows/ci.yml/badge.svg)](https://github.com/thewoolleyman/jetbrains-terminal-kitty-keys/actions/workflows/ci.yml)
 [![JetBrains Plugin](https://img.shields.io/jetbrains/plugin/v/30338-terminal-kitty-keys.svg)](https://plugins.jetbrains.com/plugin/30338-terminal-kitty-keys)
 [![JetBrains Plugin Downloads](https://img.shields.io/jetbrains/plugin/d/30338-terminal-kitty-keys.svg)](https://plugins.jetbrains.com/plugin/30338-terminal-kitty-keys)
 
