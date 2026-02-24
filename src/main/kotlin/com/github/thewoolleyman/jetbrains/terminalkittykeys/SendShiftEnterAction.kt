@@ -3,6 +3,7 @@ package com.github.thewoolleyman.jetbrains.terminalkittykeys
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.terminal.frontend.view.TerminalView
 import org.jetbrains.plugins.terminal.TerminalToolWindowManager
 
 /**
@@ -23,37 +24,52 @@ class SendShiftEnterAction : AnAction() {
     }
 
     override fun actionPerformed(e: AnActionEvent) {
+        // Try the Reworked Terminal API first (TerminalView from data context)
+        val terminalView = e.getData(TerminalView.DATA_KEY)
+        if (terminalView != null) {
+            LOG.info("Sending Shift+Enter CSI u via TerminalView.sendText()")
+            try {
+                terminalView.sendText(SHIFT_ENTER_CSI_U)
+                return
+            } catch (ex: Exception) {
+                LOG.warn("Failed to write via TerminalView", ex)
+            }
+        }
+
+        // Fall back to Classic Terminal API (TtyConnector via TerminalToolWindowManager)
+        LOG.info("TerminalView not available, falling back to TtyConnector")
         val project = e.project
         if (project == null) {
-            LOG.debug("No project available")
+            LOG.warn("No project available")
             return
         }
 
         val toolWindow = TerminalToolWindowManager.getInstance(project).toolWindow
         if (toolWindow == null) {
-            LOG.debug("No terminal tool window found")
+            LOG.warn("No terminal tool window found")
             return
         }
 
         val content = toolWindow.contentManager.selectedContent
         if (content == null) {
-            LOG.debug("No selected terminal content")
+            LOG.warn("No selected terminal content")
             return
         }
 
         val widget = TerminalToolWindowManager.findWidgetByContent(content)
         if (widget == null) {
-            LOG.debug("No terminal widget found")
+            LOG.warn("No terminal widget found")
             return
         }
 
         val connector = widget.ttyConnector
         if (connector == null) {
-            LOG.debug("No TTY connector available")
+            LOG.warn("No TTY connector available")
             return
         }
 
         try {
+            LOG.info("Sending Shift+Enter CSI u via TtyConnector")
             connector.write(SHIFT_ENTER_CSI_U)
         } catch (ex: Exception) {
             LOG.warn("Failed to write to terminal PTY", ex)
@@ -64,3 +80,4 @@ class SendShiftEnterAction : AnAction() {
         e.presentation.isEnabled = e.project != null
     }
 }
+

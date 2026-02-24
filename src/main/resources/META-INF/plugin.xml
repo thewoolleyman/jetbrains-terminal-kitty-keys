@@ -25,11 +25,8 @@
         </action>
     </actions>
 
-    <!-- TODO: Register TerminalAllowedActionsProvider when targeting 2025.3+
-         to ensure the action fires even with "Override IDE shortcuts" enabled.
     <extensions defaultExtensionNs="org.jetbrains.plugins.terminal">
         <allowedActionsProvider
             implementation="com.github.thewoolleyman.jetbrains.terminalkittykeys.ShiftEnterAllowedActionsProvider"/>
     </extensions>
-    -->
 </idea-plugin>

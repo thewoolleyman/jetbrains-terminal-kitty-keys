@@ -8,7 +8,7 @@ group = providers.gradleProperty("pluginGroup").get()
 version = providers.gradleProperty("pluginVersion").get()
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 repositories {
@@ -20,9 +20,9 @@ repositories {
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity(providers.gradleProperty("platformVersion"))
+        local("/Users/cwoolley/Applications/IntelliJ IDEA.app")
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
-}
+    }
 }
 
 intellijPlatform {
