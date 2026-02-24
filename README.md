@@ -3,6 +3,9 @@
 [![JetBrains Plugin](https://img.shields.io/jetbrains/plugin/v/30338-terminal-kitty-keys.svg)](https://plugins.jetbrains.com/plugin/30338-terminal-kitty-keys)
 [![JetBrains Plugin Downloads](https://img.shields.io/jetbrains/plugin/d/30338-terminal-kitty-keys.svg)](https://plugins.jetbrains.com/plugin/30338-terminal-kitty-keys)
 
+<a href="https://www.buymeacoffee.com/thewoolleyman" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/arial-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+<img src="docs/buy-me-a-coffee-qr-code.png" alt="Buy Me A Coffee QR Code" width="120">
+
 A JetBrains IDE plugin that sends [kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol/) escape sequences for Shift+Enter in the built-in terminal.
 
 ## JetBrains' Built-in Fix (2025.3.3+)
