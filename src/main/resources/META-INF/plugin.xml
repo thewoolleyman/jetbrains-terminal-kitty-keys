@@ -14,6 +14,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <b>0.2.1</b>
+        <ul>
+            <li>Add compatibility with 2026.2 / 262 IDE builds</li>
+            <li>Update build tooling for 262 module descriptor format</li>
+        </ul>
+
         <b>0.2.0</b>
         <ul>
             <li>Reworked for IntelliJ 2025.3 Reworked Terminal API</li>

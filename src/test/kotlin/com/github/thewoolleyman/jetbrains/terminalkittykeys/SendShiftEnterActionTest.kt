@@ -1,21 +1,20 @@
 package com.github.thewoolleyman.jetbrains.terminalkittykeys
 
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.ActionUiKind
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.wm.ToolWindow
 import com.intellij.terminal.frontend.view.TerminalView
-import com.intellij.ui.content.Content
-import com.intellij.ui.content.ContentManager
 import com.jediterm.terminal.TtyConnector
-import com.intellij.terminal.ui.TerminalWidget
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.verify
-import org.jetbrains.plugins.terminal.TerminalToolWindowManager
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -30,16 +29,37 @@ class SendShiftEnterActionTest {
     @Before
     fun setUp() {
         action = SendShiftEnterAction()
-        event = mockk(relaxed = true)
+        event = actionEvent()
+    }
+
+    private fun actionEvent(
+        project: Project? = null,
+        terminalView: TerminalView? = null,
+    ): AnActionEvent {
         presentation = Presentation()
-        every { event.presentation } returns presentation
+        val dataContext = DataContext { dataId ->
+            when (dataId) {
+                CommonDataKeys.PROJECT.name -> project
+                TerminalView.DATA_KEY.name -> terminalView
+                else -> null
+            }
+        }
+        return AnActionEvent(
+            dataContext,
+            presentation,
+            ActionPlaces.UNKNOWN,
+            ActionUiKind.NONE,
+            null,
+            0,
+            mockk<ActionManager>(relaxed = true),
+        )
     }
 
     // --- update() tests ---
 
     @Test
     fun `update enables action when project is present`() {
-        every { event.project } returns mockk()
+        event = actionEvent(project = mockk())
 
         action.update(event)
 
@@ -48,7 +68,7 @@ class SendShiftEnterActionTest {
 
     @Test
     fun `update disables action when project is null`() {
-        every { event.project } returns null
+        event = actionEvent(project = null)
 
         action.update(event)
 
@@ -60,7 +80,7 @@ class SendShiftEnterActionTest {
     @Test
     fun `sends CSI u via TerminalView when available`() {
         val terminalView = mockk<TerminalView>()
-        every { event.getData(TerminalView.DATA_KEY) } returns terminalView
+        event = actionEvent(terminalView = terminalView)
         every { terminalView.sendText("\u001b[13;2u") } just runs
 
         action.actionPerformed(event)
@@ -71,179 +91,86 @@ class SendShiftEnterActionTest {
     @Test
     fun `falls back to TtyConnector when TerminalView sendText throws`() {
         val terminalView = mockk<TerminalView>()
-        every { event.getData(TerminalView.DATA_KEY) } returns terminalView
         every { terminalView.sendText(any()) } throws RuntimeException("sendText failed")
 
         val project = mockk<Project>()
-        every { event.project } returns project
-
-        val toolWindowManager = mockk<TerminalToolWindowManager>()
-        val toolWindow = mockk<ToolWindow>()
-        val contentManager = mockk<ContentManager>()
-        val content = mockk<Content>()
-        val widget = mockk<TerminalWidget>()
+        event = actionEvent(project = project, terminalView = terminalView)
         val connector = mockk<TtyConnector>()
+        action = SendShiftEnterAction { connector }
+        every { connector.write("\u001b[13;2u") } just runs
 
-        mockkStatic(TerminalToolWindowManager::class) {
-            every { TerminalToolWindowManager.getInstance(project) } returns toolWindowManager
-            every { toolWindowManager.toolWindow } returns toolWindow
-            every { toolWindow.contentManager } returns contentManager
-            every { contentManager.selectedContent } returns content
-            every { TerminalToolWindowManager.findWidgetByContent(content) } returns widget
-            every { widget.ttyConnector } returns connector
-            every { connector.write("\u001b[13;2u") } just runs
+        action.actionPerformed(event)
 
-            action.actionPerformed(event)
-
-            verify(exactly = 1) { connector.write("\u001b[13;2u") }
-        }
+        verify(exactly = 1) { connector.write("\u001b[13;2u") }
     }
 
     // --- actionPerformed() tests: TtyConnector fallback path ---
 
     @Test
     fun `sends CSI u via TtyConnector when TerminalView unavailable`() {
-        every { event.getData(TerminalView.DATA_KEY) } returns null
-
         val project = mockk<Project>()
-        every { event.project } returns project
-
-        val toolWindowManager = mockk<TerminalToolWindowManager>()
-        val toolWindow = mockk<ToolWindow>()
-        val contentManager = mockk<ContentManager>()
-        val content = mockk<Content>()
-        val widget = mockk<TerminalWidget>()
+        event = actionEvent(project = project)
         val connector = mockk<TtyConnector>()
+        action = SendShiftEnterAction { connector }
+        every { connector.write("\u001b[13;2u") } just runs
 
-        mockkStatic(TerminalToolWindowManager::class) {
-            every { TerminalToolWindowManager.getInstance(project) } returns toolWindowManager
-            every { toolWindowManager.toolWindow } returns toolWindow
-            every { toolWindow.contentManager } returns contentManager
-            every { contentManager.selectedContent } returns content
-            every { TerminalToolWindowManager.findWidgetByContent(content) } returns widget
-            every { widget.ttyConnector } returns connector
-            every { connector.write("\u001b[13;2u") } just runs
+        action.actionPerformed(event)
 
-            action.actionPerformed(event)
-
-            verify(exactly = 1) { connector.write("\u001b[13;2u") }
-        }
+        verify(exactly = 1) { connector.write("\u001b[13;2u") }
     }
 
     @Test
     fun `returns gracefully when project is null`() {
-        every { event.getData(TerminalView.DATA_KEY) } returns null
-        every { event.project } returns null
+        event = actionEvent(project = null)
 
         action.actionPerformed(event) // should not throw
     }
 
     @Test
     fun `returns gracefully when tool window is null`() {
-        every { event.getData(TerminalView.DATA_KEY) } returns null
         val project = mockk<Project>()
-        every { event.project } returns project
+        event = actionEvent(project = project)
+        action = SendShiftEnterAction { null }
 
-        val toolWindowManager = mockk<TerminalToolWindowManager>()
-
-        mockkStatic(TerminalToolWindowManager::class) {
-            every { TerminalToolWindowManager.getInstance(project) } returns toolWindowManager
-            every { toolWindowManager.toolWindow } returns null
-
-            action.actionPerformed(event) // should not throw
-        }
+        action.actionPerformed(event) // should not throw
     }
 
     @Test
     fun `returns gracefully when selected content is null`() {
-        every { event.getData(TerminalView.DATA_KEY) } returns null
         val project = mockk<Project>()
-        every { event.project } returns project
+        event = actionEvent(project = project)
+        action = SendShiftEnterAction { null }
 
-        val toolWindowManager = mockk<TerminalToolWindowManager>()
-        val toolWindow = mockk<ToolWindow>()
-        val contentManager = mockk<ContentManager>()
-
-        mockkStatic(TerminalToolWindowManager::class) {
-            every { TerminalToolWindowManager.getInstance(project) } returns toolWindowManager
-            every { toolWindowManager.toolWindow } returns toolWindow
-            every { toolWindow.contentManager } returns contentManager
-            every { contentManager.selectedContent } returns null
-
-            action.actionPerformed(event) // should not throw
-        }
+        action.actionPerformed(event) // should not throw
     }
 
     @Test
     fun `returns gracefully when widget is null`() {
-        every { event.getData(TerminalView.DATA_KEY) } returns null
         val project = mockk<Project>()
-        every { event.project } returns project
+        event = actionEvent(project = project)
+        action = SendShiftEnterAction { null }
 
-        val toolWindowManager = mockk<TerminalToolWindowManager>()
-        val toolWindow = mockk<ToolWindow>()
-        val contentManager = mockk<ContentManager>()
-        val content = mockk<Content>()
-
-        mockkStatic(TerminalToolWindowManager::class) {
-            every { TerminalToolWindowManager.getInstance(project) } returns toolWindowManager
-            every { toolWindowManager.toolWindow } returns toolWindow
-            every { toolWindow.contentManager } returns contentManager
-            every { contentManager.selectedContent } returns content
-            every { TerminalToolWindowManager.findWidgetByContent(content) } returns null
-
-            action.actionPerformed(event) // should not throw
-        }
+        action.actionPerformed(event) // should not throw
     }
 
     @Test
     fun `returns gracefully when tty connector is null`() {
-        every { event.getData(TerminalView.DATA_KEY) } returns null
         val project = mockk<Project>()
-        every { event.project } returns project
+        event = actionEvent(project = project)
+        action = SendShiftEnterAction { null }
 
-        val toolWindowManager = mockk<TerminalToolWindowManager>()
-        val toolWindow = mockk<ToolWindow>()
-        val contentManager = mockk<ContentManager>()
-        val content = mockk<Content>()
-        val widget = mockk<TerminalWidget>()
-
-        mockkStatic(TerminalToolWindowManager::class) {
-            every { TerminalToolWindowManager.getInstance(project) } returns toolWindowManager
-            every { toolWindowManager.toolWindow } returns toolWindow
-            every { toolWindow.contentManager } returns contentManager
-            every { contentManager.selectedContent } returns content
-            every { TerminalToolWindowManager.findWidgetByContent(content) } returns widget
-            every { widget.ttyConnector } returns null
-
-            action.actionPerformed(event) // should not throw
-        }
+        action.actionPerformed(event) // should not throw
     }
 
     @Test
     fun `handles TtyConnector write exception gracefully`() {
-        every { event.getData(TerminalView.DATA_KEY) } returns null
         val project = mockk<Project>()
-        every { event.project } returns project
-
-        val toolWindowManager = mockk<TerminalToolWindowManager>()
-        val toolWindow = mockk<ToolWindow>()
-        val contentManager = mockk<ContentManager>()
-        val content = mockk<Content>()
-        val widget = mockk<TerminalWidget>()
+        event = actionEvent(project = project)
         val connector = mockk<TtyConnector>()
+        action = SendShiftEnterAction { connector }
+        every { connector.write(any<String>()) } throws RuntimeException("write failed")
 
-        mockkStatic(TerminalToolWindowManager::class) {
-            every { TerminalToolWindowManager.getInstance(project) } returns toolWindowManager
-            every { toolWindowManager.toolWindow } returns toolWindow
-            every { toolWindow.contentManager } returns contentManager
-            every { contentManager.selectedContent } returns content
-            every { TerminalToolWindowManager.findWidgetByContent(content) } returns widget
-            every { widget.ttyConnector } returns connector
-            every { connector.write(any<String>()) } throws RuntimeException("write failed")
-
-            action.actionPerformed(event) // should not throw
-        }
+        action.actionPerformed(event) // should not throw
     }
 
     // --- Constant verification ---
@@ -254,7 +181,7 @@ class SendShiftEnterActionTest {
         val expected = "\u001b[13;2u"
         // Verify via the TerminalView path that the correct sequence is sent
         val terminalView = mockk<TerminalView>()
-        every { event.getData(TerminalView.DATA_KEY) } returns terminalView
+        event = actionEvent(terminalView = terminalView)
         every { terminalView.sendText(any()) } just runs
 
         action.actionPerformed(event)

@@ -157,7 +157,7 @@ JetBrains' built-in fix sends `ESC+CR` (`\x1b\r`), which Neovim interprets as `<
 
 ### Prerequisites
 
-- JDK 17+
+- JDK 21+
 - The project uses the Gradle IntelliJ Plugin for building
 
 ### Build

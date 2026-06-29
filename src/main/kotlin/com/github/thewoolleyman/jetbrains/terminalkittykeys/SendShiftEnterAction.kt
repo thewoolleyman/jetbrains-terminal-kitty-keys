@@ -3,7 +3,9 @@ package com.github.thewoolleyman.jetbrains.terminalkittykeys
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
 import com.intellij.terminal.frontend.view.TerminalView
+import com.jediterm.terminal.TtyConnector
 import org.jetbrains.plugins.terminal.TerminalToolWindowManager
 
 /**
@@ -13,7 +15,9 @@ import org.jetbrains.plugins.terminal.TerminalToolWindowManager
  * This allows TUI applications that support the kitty keyboard protocol to properly
  * distinguish Shift+Enter from plain Enter.
  */
-class SendShiftEnterAction : AnAction() {
+class SendShiftEnterAction(
+    private val classicTerminalConnector: (Project) -> TtyConnector? = ::selectedClassicTerminalConnector,
+) : AnAction() {
 
     companion object {
         private val LOG: Logger = Logger.getInstance(SendShiftEnterAction::class.java)
@@ -44,25 +48,7 @@ class SendShiftEnterAction : AnAction() {
             return
         }
 
-        val toolWindow = TerminalToolWindowManager.getInstance(project).toolWindow
-        if (toolWindow == null) {
-            LOG.warn("No terminal tool window found")
-            return
-        }
-
-        val content = toolWindow.contentManager.selectedContent
-        if (content == null) {
-            LOG.warn("No selected terminal content")
-            return
-        }
-
-        val widget = TerminalToolWindowManager.findWidgetByContent(content)
-        if (widget == null) {
-            LOG.warn("No terminal widget found")
-            return
-        }
-
-        val connector = widget.ttyConnector
+        val connector = classicTerminalConnector(project)
         if (connector == null) {
             LOG.warn("No TTY connector available")
             return
@@ -81,3 +67,12 @@ class SendShiftEnterAction : AnAction() {
     }
 }
 
+private fun selectedClassicTerminalConnector(project: Project): TtyConnector? {
+    val toolWindow = TerminalToolWindowManager.getInstance(project).toolWindow
+        ?: return null
+    val content = toolWindow.contentManager.selectedContent
+        ?: return null
+    val widget = TerminalToolWindowManager.findWidgetByContent(content)
+        ?: return null
+    return widget.ttyConnector
+}
