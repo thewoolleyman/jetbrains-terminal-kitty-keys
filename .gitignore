@@ -38,3 +38,6 @@ build/
 # JVM
 *.hprof
 hs_err_pid*.log
+
+# Local secrets
+.env.local
