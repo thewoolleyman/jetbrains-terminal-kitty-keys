@@ -56,6 +56,10 @@ tasks.test {
     dependsOn(replaceCoroutinesAgent)
 }
 
+tasks.named("buildPlugin") {
+    mustRunAfter(replaceCoroutinesAgent)
+}
+
 intellijPlatform {
     publishing {
         token = providers.environmentVariable("PUBLISH_TOKEN")
